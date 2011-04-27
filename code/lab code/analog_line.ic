@@ -1,0 +1,129 @@
+#define l_opto 4
+#define m_opto 5
+#define r_opto 6
+#define l_motor 0
+#define r_motor 3
+#define tolerance 40
+void drive_forward()
+{
+    motor(l_motor,75);
+    motor(r_motor,75);
+}
+void turn_left()
+{
+    motor(l_motor,-30);
+    motor(r_motor,30);
+}
+void turn_right()
+{
+    motor(l_motor,30);
+    motor(r_motor,-30);
+}
+void turn_left_slow()
+{
+    motor(l_motor,0);
+    motor(r_motor,45);
+}
+void turn_right_slow()
+{
+    motor(l_motor,45);
+    motor(r_motor,0);
+}
+void stop()
+{
+    motor(l_motor,0);
+    motor(r_motor,0);
+}
+int main()
+{
+    int lefty;
+    int righty;
+    int middle;
+    int drive_state;
+    int p_state;
+    
+    while(1)
+      {
+        while(!stop_button())
+          {
+            lefty=analog(l_opto);
+            middle=analog(m_opto);
+            righty=analog(r_opto);
+            
+            drive_state=0;
+            
+            if(lefty<tolerance)
+              {
+                drive_state+=4;
+            }
+            if(middle<tolerance)
+              {
+                drive_state+=2;
+            }
+            if(righty<tolerance)
+              {
+                drive_state+=1;
+            }
+            
+            switch(drive_state)
+              {
+                case 0:
+                  if (p_state==1 || p_state==3)
+                  {
+                    turn_right();
+                    printf("Lost Turning right\n");
+                }
+                else if (p_state==4 || p_state==6)
+                  {
+                    turn_left();
+                    printf("Lost Turning left\n");
+
+                }
+                else
+                {
+                    stop();
+                    printf("WTF Totally lost\n");
+                }
+                break;
+                case 1:
+                  p_state=1;
+                turn_right();
+                printf("Turning right\n");
+                break;
+                case 2:
+                  p_state=2;
+                drive_forward();
+                printf("Full forward\n");
+                break;
+                case 3:
+                  p_state=3;
+                  turn_right_slow();
+                printf("Slow right\n");
+                break;
+                case 4:
+                  p_state=4;
+                  turn_left();
+                printf("Turnning left\n");
+                break;
+                case 5:
+                  p_state=5;
+                printf("L and R but not M\n");
+                break;
+                case 6:
+                  p_state=6;
+                  turn_left_slow();
+                printf("Slow left\n");
+                break;
+                case 7:
+                  p_state=7;
+                  drive_forward();
+                printf("Full forward\n");
+                break;
+            }
+            
+        }
+        
+    }
+    
+    
+}

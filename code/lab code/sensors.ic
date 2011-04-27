@@ -1,0 +1,100 @@
+//////////////////////////
+//Team:       D-4       //
+//Professor:  STAAB     //
+//Time:       8:30      //
+//Program:    Sensors   // 
+//////////////////////////
+
+#define MICROSWITCH 8 //microswitch port
+#define MOTOR 0       //motor port
+#define CDS 2         //cds port
+
+/*Define Speeds*/
+#define FULLFORWARD 100 
+#define FULLBACK -100
+
+#define RUNMODE 1  //used to select microswitch (0) or cds (1)
+
+int speed = 0;
+
+/////////////////////////////////////
+// void test_microswitch()         //
+//    Check value of microswitch   //
+//    If switch is pressed         //
+//        run motor at 100         //
+//    Else                         //
+//        stop motor               //
+/////////////////////////////////////
+
+void test_microswitch()
+{
+    if(digital(MICROSWITCH) )
+      {
+        motor(MOTOR, FULLFORWARD);  
+        printf("I'm on a boat\n");
+    }
+    else
+      {
+        motor(MOTOR,0);   
+        printf("The game\n");
+    }
+}
+
+/////////////////////////////////////
+// void test_cds(int* speed)       //
+//    Check value of cds cell      //
+//    If cell value is > 100       //
+//        speed up                 //
+//    Else                         //
+//        speed down               //
+/////////////////////////////////////
+
+void test_cds()
+{
+    if(analog(CDS) < 25)
+      {
+        motor(MOTOR,speed);
+        
+        if(speed<FULLFORWARD) //check if speed is already 100
+          {
+            speed++;
+            printf("%d\n",speed);
+        }
+    }  
+    else
+      {
+        motor(MOTOR,speed);
+        
+        if(speed>FULLBACK) //check if speed is already -100
+          {
+            (speed)--;
+            printf("%d\n",speed);
+        }
+    }
+}
+
+int main()
+{
+    while(!stop_button())
+      {
+        
+        ////////////////////////////////////////
+        //Uses preprocessor directives to     //
+        //determine what code to compile      //
+        //It is used to save RAM without      //
+        //resorting to comment blocks         //
+        //Selection of microswitch or cds     //
+        //is dependent on value of RUNMODE    //
+        ////////////////////////////////////////
+        
+        #if RUNMODE==0 
+          test_microswitch();
+        #endif
+        
+        
+        #if RUNMODE==1
+          test_cds();
+        #endif
+    }
+    beep();
+}

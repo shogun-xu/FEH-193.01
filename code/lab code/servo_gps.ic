@@ -1,0 +1,51 @@
+
+#use exp_servo_lib.ic     //required libraries
+#use gps_module.icb
+#use gps_module.ic
+
+#define SERVO 5           //constants
+#define SERVO_MAX 4980
+#define SERVO_MIN 490
+
+
+int angle; //represents the angle to set the servo to
+
+int main()
+{
+    // initialization of gps and servos
+    printf("Initializing section\n");
+    gps_initialize_knob();
+    exp_servo_enable();
+    gps_enable();
+    exp_servo_min[SERVO]=SERVO_MIN;
+    exp_servo_max[SERVO]=SERVO_MAX;
+    
+    exp_servo_deg(SERVO,angle);
+    
+    while(!stop_button())
+      {         
+        
+        if(gps_get_data())  //check to see if new data has been recieved
+          {
+            int delta = 90-gps_heading; //angular distance from 90
+            
+            //need to increase angle
+            if(delta>0 && gps_heading<89 && (angle+delta)<179)
+              {
+                angle+=delta; 
+            }
+            
+            //need to decrease angle
+            else if(delta<0 && gps_heading>91 && (angle+delta)>1)
+              {
+                angle+=delta;
+            }
+            
+            exp_servo_deg(SERVO,angle); //set servo to new angle
+            
+        }
+        printf(" GPS: %d A: %d\n",gps_heading,angle);
+        
+        msleep((long)500);  //wait half a second
+    }
+}

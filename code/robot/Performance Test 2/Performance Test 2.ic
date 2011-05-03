@@ -1,0 +1,14 @@
+#define L_MOTOR 0
+#define R_MOTOR 3
+
+int main()
+{
+    while(1)
+      {
+        if(start_button())
+          {
+            motor(L_MOTOR,75);
+            motor(R_MOTOR,75);
+        }
+    }
+}
